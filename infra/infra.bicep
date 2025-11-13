@@ -15,7 +15,7 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   }
 }
 
-resource logKeys 'Microsoft.OperationalInsights/workspaces/sharedKeys@2022-10-01' existing = {
+resource logKeys 'Microsoft.OperationalInsights/workspaces/sharedKeys@2020-08-01' existing = {
   name: logAnalytics.name
 }
 

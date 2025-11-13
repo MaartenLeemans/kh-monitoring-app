@@ -15,9 +15,8 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   }
 }
 
-resource logKeys 'Microsoft.OperationalInsights/workspaces/sharedKeys@2020-08-01' = {
-  name: 'default'
-  parent: logAnalytics
+resource logKeys 'Microsoft.OperationalInsights/workspaces/sharedKeys@2022-10-01' existing = {
+  name: logAnalytics.name
 }
 
 resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {

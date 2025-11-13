@@ -1,0 +1,35 @@
+services:
+  web:
+    build: .
+    image: monitoring_app:latest
+    container_name: monitoring_web
+    ports:
+      - "8080:5000"
+    env_file: .env
+    volumes:
+      - app_data:/app/data
+    command: >
+      gunicorn --bind 0.0.0.0:5000
+               --workers 3
+               app:app
+    restart: unless-stopped
+    networks:
+      - monitoring_net
+
+  collector:
+    image: monitoring_app:latest   # gebruikt dezelfde image, geen build
+    container_name: monitoring_collector
+    command: ["python", "collect.py"]
+    env_file: .env
+    volumes:
+      - app_data:/app/data
+    restart: unless-stopped
+    networks:
+      - monitoring_net
+
+networks:
+  monitoring_net:
+    driver: bridge
+
+volumes:
+  app_data:

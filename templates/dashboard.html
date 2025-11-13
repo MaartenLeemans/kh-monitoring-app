@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>System Monitoring</h1>
+
+<div class="grid">
+    <div class="card">
+        <h2>CPU</h2>
+        <p>{{ data.cpu }}%</p>
+    </div>
+    <div class="card">
+        <h2>Memory</h2>
+        <p>{{ data.memory }}%</p>
+    </div>
+    <div class="card">
+        <h2>Disk</h2>
+        <p>{{ data.disk }}%</p>
+    </div>
+</div>
+
+<section class="section">
+    <h3>Live JSON</h3>
+    <p>API endpoint: <code>/api/metrics</code></p>
+    <iframe src="/api/metrics" class="json-frame"></iframe>
+</section>
+{% endblock %}

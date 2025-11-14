@@ -13,8 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout code (clean)
         uses: actions/checkout@v4
+        with:
+          clean: true
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -38,8 +40,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (clean)
         uses: actions/checkout@v4
+        with:
+          clean: true
 
       - name: Azure Login
         uses: azure/login@v2

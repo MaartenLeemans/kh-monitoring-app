@@ -62,5 +62,5 @@ jobs:
           inlineScript: |
             az deployment group create \
               --resource-group ${{ secrets.AZURE_RG }} \
-              --template-file infra/infra.bicep \
+              --template-file infra/main.bicep \
               --parameters containerImage=${{ env.IMAGE_TAG }}

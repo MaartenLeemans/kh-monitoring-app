@@ -49,7 +49,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
           name: 'monitoring'
           image: containerImage
           resources: {
-            cpu: 0.5
+            cpu: "0.5"
             memory: '1Gi'
           }
         }
@@ -60,4 +60,5 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
       }
     }
   }
+
 }

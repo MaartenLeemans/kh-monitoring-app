@@ -13,6 +13,9 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    env:
+      ACTIONS_ALLOW_UNSECURE_OUTPUT: true   # <--- BELANGRIJK!!!
+
     outputs:
       image_tag: ${{ steps.set_tag.outputs.image_tag }}
 
@@ -32,11 +35,9 @@ jobs:
       - name: Push Docker image
         run: docker push $IMAGE_NAME:latest
 
-      - name: Set image tag output (unmasked)
+      - name: Set image tag output
         id: set_tag
-        run: |
-          echo "ACTIONS_ALLOW_UNSECURE_OUTPUT=true" >> $GITHUB_ENV
-          echo "image_tag=$IMAGE_NAME:latest" >> $GITHUB_OUTPUT
+        run: echo "image_tag=$IMAGE_NAME:latest" >> $GITHUB_OUTPUT
 
 
   deploy-bicep:
@@ -59,4 +60,4 @@ jobs:
             az deployment group create \
               --resource-group ${{ secrets.AZURE_RG }} \
               --template-file infra/main.bicep \
-              --parameters containerImage=${{ needs.build-and-push.outputs.image_tag }}
+              --parameters containerImage="${{ needs.build-and-push.outputs.image_tag }}"

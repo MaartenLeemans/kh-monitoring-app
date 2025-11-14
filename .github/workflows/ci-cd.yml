@@ -29,10 +29,10 @@ jobs:
       - name: Build Docker image
         run: docker build -t $IMAGE_NAME:latest .
 
-      - name: Push image
+      - name: Push Docker image
         run: docker push $IMAGE_NAME:latest
 
-      - name: Set output tag
+      - name: Set image tag output
         id: set_tag
         run: echo "image_tag=$IMAGE_NAME:latest" >> $GITHUB_OUTPUT
 
@@ -57,4 +57,6 @@ jobs:
             az deployment group create \
               --resource-group ${{ secrets.AZURE_RG }} \
               --template-file infra/main.bicep \
-              --parameters containerImage=${{ needs.build-and-push.outputs.image_tag }}
+              --parameters \
+                  location=${{ secrets.AZURE_LOCATION }} \
+                  containerImage=${{ needs.build-and-push.outputs.image_tag }}

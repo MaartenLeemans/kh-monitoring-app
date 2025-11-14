@@ -1,14 +1,36 @@
-# Ignore virtual environment
+# -------------------------
+# Python virtual environments
+# -------------------------
 venv/
-
-# Ignore environment secret file
 .env
 
-# Python cache
+# -------------------------
+# Python cache files
+# -------------------------
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
+# -------------------------
+# Distribution / build folders
+# -------------------------
+build/
+dist/
+*.egg-info/
+
+# -------------------------
 # VSCode (optioneel)
+# -------------------------
 .vscode/
+
+# -------------------------
+# IDE-specific
+# -------------------------
+.idea/
+*.swp
+
+# -------------------------
+# Docker cache (optioneel)
+# -------------------------
+.dockerignore

@@ -1,9 +1,9 @@
-name: CI/CD - KH Monitoring App
+name: CI/CD
 
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/kh-monitoring-app
@@ -12,14 +12,12 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Clean workspace
-        run: rm -rf ${{ github.workspace }}/*
+    outputs:
+      image_tag: ${{ steps.build.outputs.image_tag }}
 
-      - name: Checkout code (clean)
+    steps:
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          clean: true
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -28,28 +26,22 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build image
+        id: build
         run: |
           docker build -t $IMAGE_NAME:latest .
+          echo "image_tag=$IMAGE_NAME:latest" >> $GITHUB_OUTPUT
 
       - name: Push image
-        run: |
-          docker push $IMAGE_NAME:latest
+        run: docker push $IMAGE_NAME:latest
 
-      - name: Save tag
-        run: echo "IMAGE_TAG=$IMAGE_NAME:latest" >> $GITHUB_ENV
 
   deploy-bicep:
     needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clean workspace
-        run: rm -rf ${{ github.workspace }}/*
-
-      - name: Checkout repository (clean)
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          clean: true
 
       - name: Azure Login
         uses: azure/login@v2
@@ -63,4 +55,4 @@ jobs:
             az deployment group create \
               --resource-group ${{ secrets.AZURE_RG }} \
               --template-file infra/main.bicep \
-              --parameters containerImage=${{ env.IMAGE_TAG }}
+              --parameters containerImage=${{ needs.build-and-push.outputs.image_tag }}

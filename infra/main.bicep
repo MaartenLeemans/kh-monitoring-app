@@ -4,7 +4,7 @@ param containerAppName string = 'kh-monitoring-app'
 param logAnalyticsName string = 'kh-monitoring-law'
 param containerImage string
 
-// Log Analytics
+// Log Analytics workspace
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: logAnalyticsName
   location: location
@@ -16,10 +16,11 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   }
 }
 
-var logKey = listKeys(logAnalytics.id, '2020-08-01')
+// get shared keys
+var logKeys = listKeys(logAnalytics.id, '2020-08-01')
 
-// Managed Environment
-resource env 'Microsoft.App/managedEnvironments@2023-05-01' = {
+// Container Apps Environment
+resource containerEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
   name: environmentName
   location: location
   properties: {
@@ -27,7 +28,7 @@ resource env 'Microsoft.App/managedEnvironments@2023-05-01' = {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
         customerId: logAnalytics.properties.customerId
-        sharedKey: logKey.primarySharedKey
+        sharedKey: logKeys.primarySharedKey
       }
     }
   }
@@ -38,7 +39,7 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
   name: containerAppName
   location: location
   properties: {
-    managedEnvironmentId: env.id
+    managedEnvironmentId: containerEnv.id
     configuration: {
       ingress: {
         external: true
@@ -46,15 +47,10 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
       }
     }
     template: {
-      revisionSuffix: 'v1'
       containers: [
         {
           name: 'monitoring'
           image: containerImage
-          resources: {
-            cpu: 1.0
-            memory: '1Gi'
-          }
         }
       ]
       scale: {

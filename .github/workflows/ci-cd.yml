@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Clean workspace
+        run: rm -rf ${{ github.workspace }}/*
+
       - name: Checkout code (clean)
         uses: actions/checkout@v4
         with:
@@ -40,6 +43,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Clean workspace
+        run: rm -rf ${{ github.workspace }}/*
+
       - name: Checkout repository (clean)
         uses: actions/checkout@v4
         with:

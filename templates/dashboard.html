@@ -24,7 +24,7 @@
     <div class="card">
         <h2>Azure CPU</h2>
         <p>
-            {% if data.azure_cpu %}
+            {% if data.azure_cpu is not none %}
                 {{ data.azure_cpu }} %
             {% else %}
                 <span class="warning">Nog geen data / Error</span>
@@ -35,7 +35,7 @@
     <div class="card">
         <h2>Azure Memory</h2>
         <p>
-            {% if data.azure_memory %}
+            {% if data.azure_memory is not none %}
                 {{ data.azure_memory }} MB
             {% else %}
                 <span class="warning">Nog geen data / Error</span>

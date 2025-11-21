@@ -70,7 +70,6 @@ def login_required(view):
 # -----------------------------
 def get_container_platform_metrics():
     """Haalt CPU en Memory metrics op van Azure Container Apps via Azure Monitor."""
-
     try:
         credential = ClientSecretCredential(
             tenant_id=TENANT_ID,
@@ -83,37 +82,40 @@ def get_container_platform_metrics():
         end = datetime.datetime.utcnow()
         start = end - datetime.timedelta(minutes=10)
 
+        # --- Correcte CPU metric ---
         cpu_query = monitor_client.metrics.list(
             RESOURCE_ID,
             timespan=f"{start}/{end}",
             interval="PT1M",
-            metricnames="CpuUsage",
+            metricnames="CpuPercentage",
             aggregation="Average"
         )
 
+        # --- Correcte Memory metric ---
         mem_query = monitor_client.metrics.list(
             RESOURCE_ID,
             timespan=f"{start}/{end}",
             interval="PT1M",
-            metricnames="MemoryWorkingSet",
+            metricnames="WorkingSetBytes",
             aggregation="Average"
         )
 
-        # Extract CPU
+        # Extract CPU %
         try:
             cpu = cpu_query.value[0].timeseries[0].data[-1].average
         except:
             cpu = None
 
-        # Extract memory (in MB)
+        # Extract memory in MB
         try:
-            mem = mem_query.value[0].timeseries[0].data[-1].average / (1024 * 1024)
+            mem_bytes = mem_query.value[0].timeseries[0].data[-1].average
+            mem = mem_bytes / (1024 * 1024)
         except:
             mem = None
 
         return {
-            "azure_cpu": round(cpu, 2) if cpu else None,
-            "azure_memory": round(mem, 2) if mem else None,
+            "azure_cpu": round(cpu, 2) if cpu is not None else None,
+            "azure_memory": round(mem, 2) if mem is not None else None,
             "error": None
         }
 
